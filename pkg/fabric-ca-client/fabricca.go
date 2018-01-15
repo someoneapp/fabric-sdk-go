@@ -111,9 +111,6 @@ func (fabricCAServices *FabricCA) Enroll(enrollmentID string, enrollmentSecret s
 		CAName: fabricCAServices.fabricCAClient.Config.CAName,
 		Name:   enrollmentID,
 		Secret: enrollmentSecret,
-		//CSR: &api.CSRInfo{
-		//	KeyRequest: csr.NewBasicKeyRequest(),
-		//},
 	}
 	enrollmentResponse, err := fabricCAServices.fabricCAClient.Enroll(req)
 	if err != nil {

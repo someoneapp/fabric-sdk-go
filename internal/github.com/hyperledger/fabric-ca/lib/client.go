@@ -27,6 +27,7 @@ import (
 	"net/url"
 	"os"
 	"path"
+	"path/filepath"
 	"strconv"
 	"strings"
 
@@ -37,6 +38,7 @@ import (
 	"github.com/hyperledger/fabric-sdk-go/internal/github.com/hyperledger/fabric-ca/lib/tls"
 	"github.com/hyperledger/fabric-sdk-go/internal/github.com/hyperledger/fabric-ca/util"
 	"github.com/hyperledger/fabric-sdk-go/third_party/github.com/hyperledger/fabric/bccsp"
+	"github.com/kylelemons/go-gypsy/yaml"
 	"github.com/mitchellh/mapstructure"
 )
 
@@ -230,7 +232,31 @@ func (c *Client) GenCSR(req *api.CSRInfo, id string) ([]byte, bccsp.Key, error) 
 
 	cr := c.newCertificateRequest(req)
 	cr.CN = id
+	gopath := os.Getenv("GOPATH")
+	var caPath = filepath.Join(gopath, "src/github.com/hyperledger/fabric-sdk-go/test/fixtures/config/fabric-ca-config")
+	_, err = os.Stat(caPath)
+	if err != nil {
+		cr.KeyRequest = nil
+	} else {
+		configPath := filepath.Join(caPath, "key-request.yaml")
+		_, err := os.Stat(configPath)
+		if err != nil {
+			cr.KeyRequest = nil
+		} else {
+			keyReq, err := yaml.ReadFile(configPath)
+			algo, err := keyReq.Get("keyrequest.A")
+			if err != nil {
+				return nil, nil, fmt.Errorf("Failed to get Algo of KeyRequest:%s", err)
+			}
+			size, err := keyReq.GetInt("keyrequest.S")
+			if err != nil {
+				return nil, nil, fmt.Errorf("Failed to get KeySize of KeyRequest:%s", err)
+			}
+			cr.KeyRequest = csr.NewBCCSPKeyRequest(algo, int(size))
+		}
+	}
 	if cr.KeyRequest == nil {
+		fmt.Println("11111111111111111111111111111111111111111111111111111111111111111111")
 		cr.KeyRequest = csr.NewBCCSPKeyRequest("SM2", 256)
 	}
 	key, cspSigner, err := util.BCCSPKeyRequestGenerate(cr, c.csp)

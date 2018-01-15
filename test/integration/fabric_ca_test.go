@@ -65,7 +65,6 @@ func TestRegisterEnrollRevoke(t *testing.T) {
 	if err != nil {
 		t.Fatalf("client.LoadUserFromStateStore return error: %v", err)
 	}
-	//adminUser = nil
 	if adminUser == nil {
 		key, cert, err := caClient.Enroll("admin", "adminpw")
 		if err != nil {

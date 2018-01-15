@@ -25,6 +25,7 @@ services:
     volumes:
       - ./channel/crypto-config/peerOrganizations/org1.example.com/ca/:/etc/hyperledger/fabric-ca-server-config
       - ./tls/fabricca/certs/server:/etc/hyperledger/fabric-ca-server-config
+      - ./config/fabric-ca-config/fabric-ca-server-config.yaml:/etc/hyperledger/fabric-ca-server/fabric-ca-server-config.yaml
     container_name: ca_peerOrg1
 
   ca1:
@@ -46,6 +47,7 @@ services:
     volumes:
       - ./channel/crypto-config/peerOrganizations/org2.example.com/ca/:/etc/hyperledger/fabric-ca-server-config
       - ./tls/fabricca/certs/server:/etc/hyperledger/fabric-ca-server-config
+      - ./config/fabric-ca-config/fabric-ca-server-config.yaml:/etc/hyperledger/fabric-ca-server/fabric-ca-server-config.yaml
     container_name: ca_peerOrg2
 
   orderer.example.com:
